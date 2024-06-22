@@ -1,0 +1,49 @@
+{
+  "name": "ez-next-auth",
+  "version": "1.0.0",
+  "description": "Makes authentication with next.js/next-auth more straightforward, No BS.",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx src/index.ts",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/supSugam/ez-next-auth.git"
+  },
+  "keywords": [
+    "next",
+    "next.js",
+    "next-auth",
+    "auth0",
+    "javascript",
+    "typescript",
+    "js",
+    "ts",
+    "authentication",
+    "commandline",
+    "cmd",
+    "command",
+    "npm",
+    "node",
+    "ez-next-auth"
+  ],
+  "author": "Sugam Subedi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/supSugam/ez-next-auth/issues"
+  },
+  "homepage": "https://github.com/supSugam/ez-next-auth#readme",
+  "devDependencies": {
+    "@types/node": "^20.14.8",
+    "tsx": "^4.15.7",
+    "typescript": "^5.5.2"
+  },
+  "dependencies": {
+    "@types/commander": "^2.12.2",
+    "@types/inquirer": "^9.0.7",
+    "commander": "^12.1.0",
+    "inquirer": "^9.2.23"
+  }
+}
