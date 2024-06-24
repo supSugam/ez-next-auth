@@ -11,7 +11,7 @@ import { createFile } from './utils/file';
 import { ProjectLanguage } from './enums/language.enum';
 import path from 'path';
 import route from './inject/auth/route';
-import { withPrefix } from './utils/string';
+import { absoluteTime, withPrefix } from './utils/string';
 import authConfig from './inject/auth/authConfig';
 import checkIsAuthenticated from './inject/auth/authUtils/checkIsAuthenticated';
 import getAccountLinkStatus from './inject/auth/authUtils/getAccountLinkStatusServerAction';
@@ -78,7 +78,7 @@ const { routerType, path: rootDir, src } = router;
       type: 'confirm',
       name: 'useGoogleOAuth',
       message: 'Use Google OAuth?',
-      initial: false, // Default to false
+      initial: true, // Default to false
     },
     {
       type: 'text',
@@ -129,7 +129,7 @@ const { routerType, path: rootDir, src } = router;
   });
 
   const authUtilsFiles = withPrefix(
-    `./`,
+    `.${extension}`,
     {
       checkIsAuthenticated: 'checkIsAuthenticated',
       clearStaleTokensServerAction: 'clearStaleTokensServerAction',
@@ -143,7 +143,7 @@ const { routerType, path: rootDir, src } = router;
       signOutServerAction: 'signOutServerAction',
       postgres: 'postgres',
     },
-    'left'
+    'right'
   );
 
   createFile({
@@ -215,27 +215,29 @@ const { routerType, path: rootDir, src } = router;
       ),
     });
   }
-
+  console.log(sessionExpirationTime);
   createFile({
     filePath: authUtilsPath,
     fileName: `authConfig.${extension}`,
     content: authConfig({
-      clearStaleTokensServerActionPath:
-        authUtilsFiles.clearStaleTokensServerAction,
-      setNameServerActionPath: authUtilsFiles.setNameServerAction,
-      maxAge: sessionExpirationTime,
+      clearStaleTokensServerActionPath: withPrefix(
+        './',
+        'clearStaleTokensServerAction'
+      ),
+      setNameServerActionPath: withPrefix('./', 'setNameServerAction'),
+      maxAge: absoluteTime(sessionExpirationTime, 's'),
       pages: {
         error: errorPage,
         signIn: signInPage,
         verifyRequest: verifyRequestPage,
       },
-      pgPoolPath: authUtilsFiles.postgres,
+      pgPoolPath: withPrefix('./', 'postgres'),
       useGoogleOAuth,
     }),
   });
 
   createFile({
-    filePath: rootDir,
+    filePath: __dirname,
     fileName: `.ez-next-auth.env`,
     content: env(envs(useGoogleOAuth)),
   });
@@ -257,5 +259,19 @@ const { routerType, path: rootDir, src } = router;
       break;
   }
 
-  console.log('Auth utilities created successfully');
+  console.log(`
+    Next Auth Setup Complete, Do not forget to:
+    - Copy the .ez-next-auth.env contents to your actual .env file.
+    - Update the .env file with the correct values.
+    - Ensure the database connection is working.
+
+    Planned Features:
+    - Add more provider for OAuth.
+    - Support MySQL and other databases.
+    - Support Session Strategy.
+    - Better CLI UX.
+
+    ※ ez-next-auth by @supSugam, Open to contributions at https://github.com/supSugam/ez-next-auth
+    
+    `);
 })();
