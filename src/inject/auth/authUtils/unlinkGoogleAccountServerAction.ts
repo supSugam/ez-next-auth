@@ -1,10 +1,7 @@
-export default function unlinkGoogleAccount({
-  authConfigPath,
-  poolConfigPath,
-}: {
-  authConfigPath: string;
-  poolConfigPath: string;
-}) {
+export default function unlinkGoogleAccountServerAction(
+  authConfigPath: string,
+  poolConfigPath: string
+) {
   return `
     
 "use server";

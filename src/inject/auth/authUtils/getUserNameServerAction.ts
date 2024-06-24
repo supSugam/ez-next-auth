@@ -1,4 +1,4 @@
-export default function getUserName(authConfigPath: string) {
+export default function getUserNameServerAction(authConfigPath: string) {
   return `
     
 "use server";

@@ -1,9 +1,16 @@
-export const withPrefix = <T extends string | Array<string>>(
+type PrefixSide = 'left' | 'right' | 'both';
+export const withPrefix = <T extends Record<string, string>>(
   prefix: string,
-  value: T
+  value: T,
+  side: PrefixSide = 'left'
 ): T => {
-  if (Array.isArray(value)) {
-    return value.map((val) => `${prefix}${val}`) as T;
-  }
-  return `${prefix}${value}` as T;
+  return Object.keys(value).reduce((acc, key) => {
+    acc[key] =
+      side === 'left'
+        ? `${prefix}${value[key]}`
+        : side === 'right'
+        ? `${value[key]}${prefix}`
+        : `${prefix}${value[key]}${prefix}`;
+    return acc;
+  }, {} as Record<string, string>) as T;
 };

@@ -11,3 +11,22 @@ export const pool = new Pool({
 });
     `;
 }
+
+// /**
+//  * Generate a LinkedIn caption from a string.
+//  * 
+//  * 
+//  * @param caption - Cringe GPT generated caption
+//  * 
+//  * 
+//  * @returns - Readymade LinkedIn caption with that goofy spacing
+//  * 
+//  * 
+//  */
+
+// export function linkedInCaptionGenerator(caption: string): string {
+//   return caption.split(/(?<=[.!?])\s+/).join('.\n\n');
+// }
+
+
+

@@ -1,4 +1,4 @@
-export default function handleGoogleSignIn(authConfigPath: string) {
+export default function googleSignInServerAction(authConfigPath: string) {
   return `
     
 "use server";

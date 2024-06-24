@@ -1,6 +1,5 @@
 export default function checkIsAuthenticated(authConfigPath: string) {
   return `
-    
 "use server";
 
 import { auth } from "${authConfigPath}";

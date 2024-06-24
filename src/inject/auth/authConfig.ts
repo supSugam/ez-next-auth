@@ -1,15 +1,31 @@
 interface AuthConfigProps {
-  authUtilsPath: string;
+  pgPoolPath: string;
+  setNameServerActionPath: string;
+  clearStaleTokensServerActionPath: string;
+  maxAge: number;
+  pages: {
+    signIn: string;
+    verifyRequest: string;
+    error: string;
+  };
+  useGoogleOAuth: boolean;
 }
-export default function authConfig({}) {
+export default function authConfig({
+  pgPoolPath,
+  setNameServerActionPath,
+  clearStaleTokensServerActionPath,
+  maxAge,
+  pages,
+  useGoogleOAuth,
+}: AuthConfigProps) {
   return `
 import NextAuth from 'next-auth';
-import Google from 'next-auth/providers/google';
+${useGoogleOAuth ? "import Google from 'next-auth/providers/google';" : ''}
 import Nodemailer from 'next-auth/providers/nodemailer';
-import { pool } from '@/src/lib/postgres';
+import { pool } from '${pgPoolPath}';
 import PostgresAdapter from '@auth/pg-adapter';
-import { setName } from '@/src/lib/auth/setNameServerAction';
-import { clearStaleTokens } from './clearStaleTokensServerAction';
+import { setName } from '${setNameServerActionPath}';
+import { clearStaleTokens } from '${clearStaleTokensServerActionPath}';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
@@ -17,19 +33,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET, // Used to sign the session cookie so AuthJS can verify the session
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days in seconds (this value is also the default)
+    maxAge: ${maxAge},
   },
   pages: {
-    signIn: '/auth/sign-in',
-    verifyRequest: '/auth/auth-success',
-    error: '/auth/auth-error',
+    signIn: '${pages.signIn}',
+    verifyRequest: '${pages.verifyRequest}',
+    error: '${pages.error}',
   },
   providers: [
-    Google({
+    ${
+      useGoogleOAuth
+        ? `Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
       allowDangerousEmailAccountLinking: true, // Allow automatic linking of users table to accounts table in database - not dangerous when used with OAuth providers that already perform email verification (like Google)
-    }),
+    }),`
+        : ''
+    }
     Nodemailer({
       server: {
         host: process.env.EMAIL_SERVER_HOST,

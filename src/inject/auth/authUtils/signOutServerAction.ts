@@ -1,4 +1,4 @@
-export default function handleSignOut(authConfigPath: string) {
+export default function signOutServerAction(authConfigPath: string) {
   return `
     
 "use server";

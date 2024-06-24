@@ -28,9 +28,14 @@ export const isPackageInstalled = (
   packageName: string,
   dev: boolean = false
 ): boolean => {
-  return !!require(`${cwd()}/package.json`)[
-    `${dev ? 'devDependencies' : 'dependencies'}`
-  ][packageName];
+  try {
+    require(`${cwd()}/package.json`)[
+      `${dev ? 'devDependencies' : 'dependencies'}`
+    ][packageName];
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
 export interface RouterTypePayload {
@@ -79,4 +84,15 @@ export const getProjectLanguage = (projectRoot?: string): ProjectLanguage => {
     isPackageInstalled('typescript', true)
     ? ProjectLanguage.TYPESCRIPT
     : ProjectLanguage.JAVASCRIPT;
+};
+
+interface ConditionalObject<T> {
+  condition?: boolean | null | 0;
+  value: T;
+}
+
+export const conditionalArray = <T>(items: ConditionalObject<T>[]): T[] => {
+  return items
+    .filter((item) => !!item.condition) // Filter out items where condition is falsy
+    .map((item) => item.value); // Map to the items' values
 };

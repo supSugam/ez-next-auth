@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Makes authentication with next.js/next-auth more straightforward, No BS.",
   "main": "index.ts",
+  "bin": {
+    "ez-next-auth": "dist/index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx src/index.ts",
@@ -37,6 +40,7 @@
   "homepage": "https://github.com/supSugam/ez-next-auth#readme",
   "devDependencies": {
     "@types/node": "^20.14.8",
+    "@types/prompts": "^2.4.9",
     "tsx": "^4.15.7",
     "typescript": "^5.5.2"
   },
@@ -44,6 +48,6 @@
     "@types/commander": "^2.12.2",
     "@types/inquirer": "^9.0.7",
     "commander": "^12.1.0",
-    "inquirer": "^9.2.23"
+    "prompts": "^2.4.2"
   }
 }

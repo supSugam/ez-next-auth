@@ -1,7 +1,13 @@
+export default function getAccountLinkStatus(
+  authConfigImport: string,
+  postgres: string
+) {
+  return `
+
 "use server";
 
-import { auth } from "@/src/lib/auth/authConfig";
-import { pool } from "@/src/lib/postgres";
+import { auth } from "${authConfigImport}";
+import { pool } from "${postgres}";
 
 export const getAccountLinkStatus = async () => {
   // Check if the user is authenticated
@@ -35,3 +41,5 @@ export const getAccountLinkStatus = async () => {
 
   return true;
 };
+`;
+}

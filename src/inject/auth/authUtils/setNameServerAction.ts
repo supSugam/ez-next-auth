@@ -1,10 +1,7 @@
-export default function setName({
-  authConfigPath,
-  poolConfigPath,
-}: {
-  authConfigPath: string;
-  poolConfigPath: string;
-}) {
+export default function setNameServerAction(
+  authConfigPath: string,
+  poolConfigPath: string
+) {
   return `
     
 "use server";

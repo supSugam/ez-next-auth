@@ -1,10 +1,7 @@
-export default function getUserRole({
-  authConfigPath,
-  poolConfigPath,
-}: {
-  authConfigPath: string;
-  poolConfigPath: string;
-}) {
+export default function getUserRoleServerAction(
+  poolConfigPath: string,
+  authConfigPath: string
+) {
   return `
     
 "use server";
