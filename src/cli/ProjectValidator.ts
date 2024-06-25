@@ -5,7 +5,7 @@ import {
   isError,
 } from '../utils/validation';
 
-class ProjectValidator {
+export class ProjectValidator {
   public isNextJsProject(): boolean {
     return isNextJsProject();
   }
@@ -25,5 +25,3 @@ class ProjectValidator {
     return getProjectLanguage();
   }
 }
-
-export { ProjectValidator };

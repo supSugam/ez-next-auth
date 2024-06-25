@@ -5,7 +5,7 @@ import { ProjectValidator } from './ProjectValidator';
 import { FileCreator } from './FileCreator';
 import packageJson from '../../package.json';
 
-class NextAuthSetup {
+export class NextAuthSetup {
   private configManager: ConfigManager;
   private projectValidator: ProjectValidator;
   private fileCreator: FileCreator;
@@ -121,5 +121,3 @@ class NextAuthSetup {
     ]);
   }
 }
-
-export { NextAuthSetup };

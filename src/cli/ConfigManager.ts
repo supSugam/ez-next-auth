@@ -2,7 +2,7 @@ import path from 'path';
 import { absoluteTime, withPrefix } from '../utils/string';
 import { createFile } from '../utils/file';
 
-class ConfigManager {
+export class ConfigManager {
   public setupConfig(
     answers: any,
     rootDir: string,
@@ -73,5 +73,3 @@ class ConfigManager {
     `;
   }
 }
-
-export { ConfigManager };

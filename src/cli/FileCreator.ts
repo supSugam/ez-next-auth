@@ -1,8 +1,21 @@
 import { createFile } from '../utils/file';
-import { withPrefix } from '../utils/string';
+import { absoluteTime, withPrefix } from '../utils/string';
 import path from 'path';
-
-class FileCreator {
+import {
+  checkIsAuthenticated,
+  clearStaleTokensServerAction,
+  emailSignInServerAction,
+  getUserNameServerAction,
+  getUserRoleServerAction,
+  setNameServerAction,
+  signOutServerAction,
+  unlinkGoogleAccountServerAction,
+  getAccountLinkStatusServerAction,
+  googleSignInServerAction,
+} from '../inject/auth/authUtils/_index';
+import { authConfig, env, envs, postgres, route } from '../inject/auth/_index';
+import { NextRouterType } from '../enums/router.enum';
+export class FileCreator {
   public createAuthFiles(
     answers: any,
     rootDir: string,
@@ -10,7 +23,15 @@ class FileCreator {
     extension: string,
     routerType: string
   ) {
-    const { authPath: ap, useGoogleOAuth } = answers;
+    const {
+      sessionExpirationTime,
+      useGoogleOAuth,
+      authPath: ap,
+      verifyRequestPage,
+      errorPage,
+      signInPage,
+    } = answers;
+
     const authPath = ap.startsWith('/') ? ap.slice(1) : ap;
     const authUtilsPath = path.join(rootDir, authPath);
 
@@ -33,96 +54,143 @@ class FileCreator {
       'right'
     );
 
-    this.createBaseFiles(authUtilsPath, authUtilsFiles, IMPORT_PREFIX);
+    const { authConfigImport, postgresImport } = withPrefix(IMPORT_PREFIX, {
+      authConfigImport: `${authPath}/authConfig`,
+      postgresImport: `${authPath}/postgres`,
+      signInConfigImport: `${authPath}/signInConfig`,
+    });
+
+    this.createBaseFiles(
+      authUtilsPath,
+      authUtilsFiles,
+      authConfigImport,
+      postgresImport
+    );
 
     if (useGoogleOAuth) {
-      this.createGoogleOAuthFiles(authUtilsPath, authUtilsFiles, IMPORT_PREFIX);
+      this.createGoogleOAuthFiles(
+        authUtilsPath,
+        authUtilsFiles,
+        authConfigImport,
+        postgresImport
+      );
     }
 
-    this.createRouterFile(
-      rootDir,
-      routerType,
-      extension,
-      IMPORT_PREFIX,
-      authUtilsFiles
-    );
+    this.injectEnvFiles(useGoogleOAuth);
+
+    this.createRouterFile(rootDir, routerType, extension, authConfigImport);
+
+    createFile({
+      filePath: authUtilsPath,
+      fileName: `authConfig.${extension}`,
+      content: authConfig({
+        clearStaleTokensServerActionPath: withPrefix(
+          './',
+          'clearStaleTokensServerAction'
+        ),
+        setNameServerActionPath: withPrefix('./', 'setNameServerAction'),
+        maxAge: absoluteTime(sessionExpirationTime, 's'),
+        pages: {
+          error: errorPage,
+          signIn: signInPage,
+          verifyRequest: verifyRequestPage,
+        },
+        pgPoolPath: withPrefix('./', 'postgres'),
+        useGoogleOAuth,
+      }),
+    });
+  }
+
+  private injectEnvFiles(useGoogleOAuth: boolean) {
+    createFile({
+      filePath: process.cwd(),
+      fileName: `.ez-next-auth.env`,
+      content: env(envs(useGoogleOAuth)),
+    });
   }
 
   private createBaseFiles(
     authUtilsPath: string,
     authUtilsFiles: any,
-    IMPORT_PREFIX: string
+    authConfigImport: string,
+    postgresImport: string
   ) {
     createFile({
       filePath: authUtilsPath,
       fileName: authUtilsFiles.checkIsAuthenticated,
-      content: `import { checkIsAuthenticated } from '${IMPORT_PREFIX}authConfig';`,
+      content: checkIsAuthenticated(authConfigImport),
     });
 
     createFile({
       filePath: authUtilsPath,
       fileName: authUtilsFiles.getAccountLinkStatusServerAction,
-      content: `import { getAccountLinkStatusServerAction } from '${IMPORT_PREFIX}postgres';`,
+      content: getAccountLinkStatusServerAction(
+        authConfigImport,
+        postgresImport
+      ),
     });
 
     createFile({
       filePath: authUtilsPath,
       fileName: authUtilsFiles.postgres,
-      content: `import { postgres } from '${IMPORT_PREFIX}postgres';`,
+      content: postgres(),
     });
 
     createFile({
       filePath: authUtilsPath,
       fileName: authUtilsFiles.clearStaleTokensServerAction,
-      content: `import { clearStaleTokensServerAction } from '${IMPORT_PREFIX}postgres';`,
+      content: clearStaleTokensServerAction(postgresImport),
     });
 
     createFile({
       filePath: authUtilsPath,
       fileName: authUtilsFiles.emailSignInServerAction,
-      content: `import { emailSignInServerAction } from '${IMPORT_PREFIX}authConfig';`,
+      content: emailSignInServerAction(authConfigImport),
     });
 
     createFile({
       filePath: authUtilsPath,
       fileName: authUtilsFiles.setNameServerAction,
-      content: `import { setNameServerAction } from '${IMPORT_PREFIX}postgres';`,
+      content: setNameServerAction(authConfigImport, postgresImport),
     });
 
     createFile({
       filePath: authUtilsPath,
       fileName: authUtilsFiles.getUserNameServerAction,
-      content: `import { getUserNameServerAction } from '${IMPORT_PREFIX}authConfig';`,
+      content: getUserNameServerAction(authConfigImport),
     });
 
     createFile({
       filePath: authUtilsPath,
       fileName: authUtilsFiles.getUserRoleServerAction,
-      content: `import { getUserRoleServerAction } from '${IMPORT_PREFIX}postgres';`,
+      content: getUserRoleServerAction(postgresImport, authConfigImport),
     });
 
     createFile({
       filePath: authUtilsPath,
       fileName: authUtilsFiles.signOutServerAction,
-      content: `import { signOutServerAction } from '${IMPORT_PREFIX}authConfig';`,
+      content: signOutServerAction(authConfigImport),
     });
   }
 
   private createGoogleOAuthFiles(
     authUtilsPath: string,
     authUtilsFiles: any,
-    IMPORT_PREFIX: string
+    authConfigImport: string,
+    postgresImport: string
   ) {
     createFile({
       filePath: authUtilsPath,
       fileName: authUtilsFiles.googleSignInServerAction,
-      content: `import { googleSignInServerAction } from '${IMPORT_PREFIX}authConfig';`,
+      content: googleSignInServerAction(authConfigImport),
     });
-
     createFile({
       filePath: authUtilsPath,
       fileName: authUtilsFiles.unlinkGoogleAccountServerAction,
-      content: `import { unlinkGoogleAccountServerAction } from '${IMPORT_PREFIX}authConfig';`,
+      content: unlinkGoogleAccountServerAction(
+        authConfigImport,
+        postgresImport
+      ),
     });
   }
 
@@ -130,28 +198,23 @@ class FileCreator {
     rootDir: string,
     routerType: string,
     extension: string,
-    IMPORT_PREFIX: string,
-    authUtilsFiles: any
+    authConfigImport: string
   ) {
-    const routeContent = `import { route } from '${IMPORT_PREFIX}authConfig';`;
-
     switch (routerType) {
-      case 'pages':
+      case NextRouterType.PAGES:
         createFile({
           filePath: rootDir,
           fileName: `api/auth/[...nextauth].${extension}`,
-          content: routeContent,
+          content: route(authConfigImport),
         });
         break;
-      case 'app':
+      case NextRouterType.APP:
         createFile({
           filePath: rootDir,
           fileName: `api/auth/[...nextauth]/route.${extension}`,
-          content: routeContent,
+          content: route(authConfigImport),
         });
         break;
     }
   }
 }
-
-export { FileCreator };

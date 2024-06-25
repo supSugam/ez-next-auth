@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "moduleResolution": "Node",
+    "moduleResolution": "Node10",
     "module": "ESNext",
     "target": "ESNext",
     "strict": true,
@@ -14,5 +14,5 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "package.json", "README.md", "package-lock.json"]
 }
