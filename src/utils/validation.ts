@@ -40,7 +40,7 @@ export const isPackageInstalled = (
 
 export interface RouterTypePayload {
   routerType: NextRouterType;
-  src?: boolean;
+  src: boolean;
   path: string;
 }
 export const getRouterType = (projectRoot?: string): RouterTypePayload => {
@@ -95,4 +95,15 @@ export const conditionalArray = <T>(items: ConditionalObject<T>[]): T[] => {
   return items
     .filter((item) => !!item.condition) // Filter out items where condition is falsy
     .map((item) => item.value); // Map to the items' values
+};
+
+export const isError = (
+  err: unknown | any,
+  cb?: (err: Error) => void
+): err is Error => {
+  if (err instanceof Error) {
+    cb?.(err);
+    return true;
+  }
+  return false;
 };

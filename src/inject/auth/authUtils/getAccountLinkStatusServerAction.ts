@@ -1,4 +1,4 @@
-export default function getAccountLinkStatus(
+export default function getAccountLinkStatusServerAction(
   authConfigImport: string,
   postgres: string
 ) {
