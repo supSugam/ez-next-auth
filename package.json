@@ -1,6 +1,6 @@
 {
   "name": "ez-next-auth",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Makes authentication with next.js/next-auth more straightforward, No BS.",
   "main": "dist/index.js",
   "bin": {
@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx src/index.ts",
     "build": "tsc",
-    "postinstall": "echo 'Run `npx ez-next-auth@init` to initialize ez-next-auth.'"
+    "postinstall": "echo 'Run `npx ez-next-auth` to initialize ez-next-auth.'"
   },
   "repository": {
     "type": "git",

@@ -4,9 +4,10 @@
 
 ## Usage
 
-Initialize `ez-next-auth` in your project:
-
-Follow prompts and copy `.ez-next-auth.env` contents to your `.env` file. Ensure your database connection is set.
+- Navigate to your Next.js project directory
+- Run `npx ez-next-auth` in your terminal
+- Install next-auth and other dependencies
+- Follow prompts and copy `.ez-next-auth.env` contents to your `.env` file. Ensure your database connection is set.
 
 ## Planned Features
 
